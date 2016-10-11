@@ -13,13 +13,17 @@ public class DCManager {
 	
 	private Map<String, DCInfo> infos;
 	
-	private DCStatus localDCStatus;
+	private LocalDCStatus localDCStatus;
 	
 	private String localDCId;
+;
 	
-	private DCManager (Map<String, DCInfo> infos, String localDCId) {
+	private int windowSize;
+	
+	private DCManager (Map<String, DCInfo> infos, String localDCId, int windowSize) {
 		this.infos = infos;
 		this.localDCId = localDCId;
+		this.windowSize = windowSize;
 		initializeDCStatuses();
 	}
 
@@ -28,19 +32,17 @@ public class DCManager {
 		
 		for (DCInfo dcInfo : infos.values()) {
 			String dcId = dcInfo.getDcId();
+			if (dcId.equals(localDCId)) {
+				continue;
+			}
 			DCStatus dcStatus = new DCStatus(dcId);
 			remoteStatuses.put(dcId, dcStatus);
 		}
 		
-		if (remoteStatuses.containsKey(localDCId)) {
-			localDCStatus = remoteStatuses.remove(localDCId);
-		}
-		else {
-			throw new IllegalArgumentException("unknown local dc id:" + localDCId);
-		}
+		localDCStatus = new LocalDCStatus(localDCId, windowSize);
 	}
 	
-	public DCStatus getLocalDCStatus() {
+	public LocalDCStatus getLocalDCStatus() {
 		return localDCStatus;
 	}
 	
@@ -65,8 +67,8 @@ public class DCManager {
 		return localDCId;
 	}
 	
-	static void initializeDCManager(Map<String, DCInfo> infos, String localDCId) {
-		dcManager = new DCManager(infos, localDCId);
+	static void initializeDCManager(Map<String, DCInfo> infos, String localDCId, int windowSize) {
+		dcManager = new DCManager(infos, localDCId, windowSize);
 	}
 	
 	public static DCManager getDCManager() {

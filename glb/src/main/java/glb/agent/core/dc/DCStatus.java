@@ -1,10 +1,12 @@
 package glb.agent.core.dc;
 
+import org.json.simple.JSONObject;
+
 public class DCStatus {
 
-	private int capacity;
+	protected int capacity;
 	
-	private int load;
+	protected int load;
 	
 	private String dcId;
 	
@@ -14,8 +16,13 @@ public class DCStatus {
 		this.load = 0;;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public synchronized String toJSONString() {
-		return "";
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("capacity", getCapacity());
+		jsonObject.put("load", getLoad());
+		
+		return jsonObject.toJSONString();
 	}
 	
 	
@@ -43,5 +50,6 @@ public class DCStatus {
 		this.capacity = capacity;
 		this.load = load;
 	}
+	
 	
 }

@@ -13,7 +13,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import glb.agent.core.dc.DCManager;
-import glb.agent.core.dc.DCStatus;
+import glb.agent.core.dc.LocalDCStatus;
 
 public class DCStatusPublisher {
 
@@ -40,7 +40,7 @@ public class DCStatusPublisher {
 
 	public synchronized void publishStatus() throws JMSException {
 		DCManager dcManager = DCManager.getDCManager();
-		DCStatus localDCStatus = dcManager.getLocalDCStatus();
+		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
 		TopicPublisher send = session.createPublisher(topic);
 		TextMessage tm = session.createTextMessage(localDCStatus.toJSONString());
 		send.publish(tm);
