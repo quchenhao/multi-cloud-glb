@@ -67,6 +67,10 @@ public class DCManager {
 		return localDCId;
 	}
 	
+	public DCStatus getRemoteDCStatus(String dcId) {
+		return remoteStatuses.get(dcId);
+	}
+	
 	static void initializeDCManager(Map<String, DCInfo> infos, String localDCId, int windowSize) {
 		dcManager = new DCManager(infos, localDCId, windowSize);
 	}
