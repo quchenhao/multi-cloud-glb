@@ -28,7 +28,7 @@ public class MonitorThread implements Runnable {
 				Measure measure = monitor.monitor();
 				DCManager dcManager = DCManager.getDCManager();
 				LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
-				localDCStatus.update(measure.getCapacity(), measure.getLoad());
+				localDCStatus.update(measure.getCapacity(), measure.getLoad(), null);
 				LocalDCStatusUpdateEvent event = new LocalDCStatusUpdateEvent();
 				Queue<Event> eventQueue = EventQueue.getEventQueue();
 				eventQueue.add(event);

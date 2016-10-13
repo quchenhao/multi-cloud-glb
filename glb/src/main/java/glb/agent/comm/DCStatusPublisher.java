@@ -42,7 +42,11 @@ public class DCStatusPublisher {
 		DCManager dcManager = DCManager.getDCManager();
 		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
 		TopicPublisher send = session.createPublisher(topic);
-		TextMessage tm = session.createTextMessage(localDCStatus.toJSONString());
+		TextMessage tm = session.createTextMessage();
+		tm.setStringProperty("dc_id", localDCStatus.getDCId());
+		tm.setIntProperty("capacity", localDCStatus.getCapacity());
+		tm.setIntProperty("total_load", localDCStatus.getTotalLoad());
+		tm.setObjectProperty("outsourced_load", localDCStatus.getOutsourcedLoad());
 		send.publish(tm);
 		send.close();
 	}

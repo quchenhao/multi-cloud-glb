@@ -50,17 +50,17 @@ public class DCManager {
 		return Collections.unmodifiableCollection(remoteStatuses.values());
 	}
 	
-	public void updateLocalDCStatus(int capacity, int load) {
-		localDCStatus.update(capacity, load);
+	public void updateLocalDCStatus(int capacity, int load, Map<String, Integer> outSourcedLoad) {
+		localDCStatus.update(capacity, load, outSourcedLoad);
 	}
 	
-	public void updateRemoteDCStatus(String dcId, int capacity, int load) {
+	public void updateRemoteDCStatus(String dcId, int capacity, int totalLoad, Map<String, Integer> outSourcedLoad) {
 		DCStatus dcStatus = remoteStatuses.get(dcId);
 		if (dcStatus == null) {
 			throw new NullPointerException("unknown " + dcId);
 		}
 		
-		dcStatus.update(capacity, load);
+		dcStatus.update(capacity, totalLoad, outSourcedLoad);
 	}
 	
 	public String getLocalDCId() {

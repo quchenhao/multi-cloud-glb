@@ -1,6 +1,7 @@
 package glb.agent.core.dc;
 
 import java.util.List;
+import java.util.Map;
 
 public class LocalDCStatus extends DCStatus {
 	
@@ -14,19 +15,24 @@ public class LocalDCStatus extends DCStatus {
 	}
 	
 	@Override
-	public synchronized void update(int capacity, int load) {
+	public synchronized void update(int capacity, int load, Map<String, Integer> outSourcedLoad) {
 		if (recentLoads.size() == windowSize) {
 			recentLoads.remove(0);
 		}
 		
 		recentLoads.add(load);
 		
+		if (outSourcedLoad != null) {
+			this.outSourcedLoad = outSourcedLoad;
+		}
+		
+		
 		this.capacity = capacity;
 	}
 	
 	@Override
-	public synchronized int getLoad() {
-		return getMeanLoad();
+	public synchronized int getTotalLoad() {
+		return getMostRecentLoad();
 	}
 
 	public synchronized int getMeanLoad() {

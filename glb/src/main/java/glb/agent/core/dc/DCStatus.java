@@ -1,55 +1,46 @@
 package glb.agent.core.dc;
 
-import org.json.simple.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DCStatus {
 
 	protected int capacity;
 	
-	protected int load;
+	protected int totalLoad;
 	
 	private String dcId;
+	
+	protected Map<String, Integer> outSourcedLoad;
 	
 	DCStatus (String dcId) {
 		this.dcId = dcId;
 		this.capacity = 0;
-		this.load = 0;;
+		this.totalLoad = 0;
+		this.outSourcedLoad = new HashMap<String, Integer>();
 	}
-	
-	@SuppressWarnings("unchecked")
-	public synchronized String toJSONString() {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("capacity", getCapacity());
-		jsonObject.put("load", getLoad());
-		
-		return jsonObject.toJSONString();
-	}
-	
 	
 	public synchronized int getCapacity() {
 		return capacity;
 	}
 	
-	public synchronized int getLoad() {
-		return load;
-	}
-	
-	public synchronized int getSpareCapacity() {
-		if (capacity > load) {
-			return capacity - load;
-		}
-		
-		return 0;
+	public synchronized int getTotalLoad() {
+		return totalLoad;
 	}
 	
 	public String getDCId() {
 		return dcId;
 	}
 	
-	synchronized void update(int capacity, int load) {
+	public synchronized void update(int capacity, int load, Map<String, Integer> outSourcedLoad) {
 		this.capacity = capacity;
-		this.load = load;
+		this.totalLoad = load;
+		if (outSourcedLoad != null) {
+			this.outSourcedLoad = outSourcedLoad;
+		}
 	}
 	
-	
+	public synchronized Map<String, Integer> getOutsourcedLoad() {
+		return outSourcedLoad;
+	}
 }
