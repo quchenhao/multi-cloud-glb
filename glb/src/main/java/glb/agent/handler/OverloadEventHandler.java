@@ -1,5 +1,13 @@
 package glb.agent.handler;
 
-public class OverloadEventHandler {
+import glib.agent.event.Event;
+
+public class OverloadEventHandler extends EventHandler {
+
+	@Override
+	public void handle(Event event) {
+		
+		
+	}
 
 }
