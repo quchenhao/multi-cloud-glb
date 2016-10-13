@@ -1,5 +1,12 @@
 package glb.agent.handler;
 
-public class RemoteDCStatusUpdateHandler {
+import glib.agent.event.Event;
+
+public class RemoteDCStatusUpdateHandler extends EventHandler {
+
+	@Override
+	public void handle(Event event) {
+		
+	}
 
 }
