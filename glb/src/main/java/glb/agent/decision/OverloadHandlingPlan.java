@@ -1,6 +1,7 @@
 package glb.agent.decision;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class OverloadHandlingPlan {
 
@@ -21,5 +22,14 @@ public class OverloadHandlingPlan {
 		return loadToReject;
 	}
 	
-	
+	@Override
+	public String toString() {
+		String str = "load to reject: " + loadToReject + "; load to outsource:";
+		
+		for (Entry<String, Integer> entry : outSourcePlan.entrySet()) {
+			str += " (" + entry.getKey() + ", " + entry.getValue() + ")";
+		}
+		
+		return str;
+	}
 }

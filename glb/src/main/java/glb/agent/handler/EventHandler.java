@@ -1,6 +1,6 @@
 package glb.agent.handler;
 
-import glib.agent.event.Event;
+import glb.agent.event.Event;
 
 public abstract class EventHandler {
 

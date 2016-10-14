@@ -6,8 +6,8 @@ import java.util.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import glb.agent.event.Event;
 import glb.agent.handler.EventHandler;
-import glib.agent.event.Event;
 
 public class EventHandlingThread implements Runnable {
 	

@@ -3,7 +3,7 @@ package glb.agent.core;
 import java.util.Queue;
 import java.util.concurrent.SynchronousQueue;
 
-import glib.agent.event.Event;
+import glb.agent.event.Event;
 
 public class EventQueue {
 

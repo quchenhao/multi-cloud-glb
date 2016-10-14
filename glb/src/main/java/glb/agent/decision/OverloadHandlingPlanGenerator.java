@@ -7,5 +7,5 @@ import glb.agent.core.dc.LocalDCStatus;
 
 public abstract class OverloadHandlingPlanGenerator {
 
-	public abstract OverloadHandlingPlan generateOverloadHandlingPlan(LocalDCStatus localDCStatus, Collection<DCStatus> remoteDCStatus);
+	public abstract OverloadHandlingPlan generateOverloadHandlingPlan(LocalDCStatus localDCStatus, Collection<DCStatus> remoteDCStatuses);
 }

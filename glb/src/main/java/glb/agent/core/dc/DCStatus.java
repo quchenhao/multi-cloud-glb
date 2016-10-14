@@ -1,5 +1,6 @@
 package glb.agent.core.dc;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,14 +34,30 @@ public class DCStatus {
 	}
 	
 	public synchronized void update(int capacity, int load, Map<String, Integer> outSourcedLoad) {
+		
+		updateCapacity(capacity);
+		updateLoad(load);
+		updateOutSourcedLoad(outSourcedLoad);
+	}
+	
+	public synchronized void updateCapacity(int capacity) {
 		this.capacity = capacity;
+	}
+	
+	public synchronized void updateLoad(int load) {
 		this.totalLoad = load;
+	}
+	
+	public synchronized void updateOutSourcedLoad(Map<String, Integer> outSourcedLoad) {
 		if (outSourcedLoad != null) {
-			this.outSourcedLoad = outSourcedLoad;
+			this.outSourcedLoad.clear();
+			if (!outSourcedLoad.isEmpty()) {
+				this.outSourcedLoad.putAll(outSourcedLoad);
+			}
 		}
 	}
 	
 	public synchronized Map<String, Integer> getOutsourcedLoad() {
-		return outSourcedLoad;
+		return Collections.unmodifiableMap(outSourcedLoad);
 	}
 }

@@ -1,4 +1,4 @@
-package glib.agent.event;
+package glb.agent.event;
 
 public class RemoteDCStatusUpdateEvent extends DCStatusUpdateEvent{
 

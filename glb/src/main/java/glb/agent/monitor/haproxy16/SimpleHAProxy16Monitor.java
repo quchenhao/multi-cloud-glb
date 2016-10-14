@@ -1,4 +1,4 @@
-package glb.agent.monitor.haproxy;
+package glb.agent.monitor.haproxy16;
 
 
 import java.io.BufferedReader;
@@ -15,26 +15,18 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-
-import glb.agent.monitor.Measure;
-import glb.agent.monitor.Monitor;
+import glb.agent.monitor.LoadMonitor;
 
 
-public class HAProxy16HomoMonitor extends Monitor {
+public class SimpleHAProxy16Monitor extends LoadMonitor {
 	
 	private HttpGet request;
 	private HttpClient client;
-	private boolean healthCheck;
-	private int unitCapacity;
-	private String localTag;
 	private int adjust;
 	
 	
-	public HAProxy16HomoMonitor(String address, int port, String url, String user, String password, boolean healthCheck, int unitCapacity, String localTag) {
+	public SimpleHAProxy16Monitor(String address, int port, String url, String user, String password) {
 		String get = "http://" + address + ":" + port + "/" + url + ";csv";
-		this.healthCheck = healthCheck;
-		this.unitCapacity = unitCapacity;
-		this.localTag = localTag;
 		this.request = new HttpGet(get);
 		
 		CredentialsProvider provider = new BasicCredentialsProvider();
@@ -44,7 +36,7 @@ public class HAProxy16HomoMonitor extends Monitor {
 	}
 	
 	@Override
-	public synchronized Measure monitor() throws ClientProtocolException, IOException {
+	public synchronized int getLoad() throws ClientProtocolException, IOException {
 		
 		HttpResponse response = client.execute(request);
 		
@@ -58,33 +50,51 @@ public class HAProxy16HomoMonitor extends Monitor {
 		
 		int load = Integer.parseInt(parts[46]) + adjust;
 		
-		String line;
+		reader.close();
 		
-		int capacity = 0;
-		
-		while ((line = reader.readLine()) != null) {
-			
-			parts = line.split(",");
-			
-			if (parts[1].equals("BACKEND")) {
-				break;
-			}
-			
-			String name = parts[1];
-			
-			if (name.startsWith(localTag)) {
-				if (healthCheck) {
-					if (parts[17].equals("UP")) {
-						capacity += unitCapacity;
-					}
-				}
-				else {
-					capacity += unitCapacity;
-				}
-			}
-		}
-		
-		return new Measure(capacity, load);
+		return load;
+//		String line;
+//		
+//		int capacity = 0;
+//		
+//		DCManager dcManager = DCManager.getDCManager();
+//		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
+//		
+//		while ((line = reader.readLine()) != null) {
+//			
+//			parts = line.split(",");
+//			
+//			if (parts[1].equals("BACKEND")) {
+//				break;
+//			}
+//			
+//			String name = parts[1];
+//			
+//			if (name.startsWith(localTag)) {
+//				Server server = localDCStatus.getServer(name);
+//				
+//				if (server == null) {
+//					log.error("unrecognized servername: " + name);
+//				}
+//				
+//				if (healthCheck) {
+//					if (parts[17].equals("UP")) {
+//						capacity += server.getCapacity();
+//					}
+//					else {
+//						server.setHealthy(false);
+//					}
+//				}
+//				else {
+//					capacity += server.getCapacity();
+//				}
+//			}
+//			else if (!dcManager.containsDC(name)) {
+//				log.error("unrecognized servername: " + name);
+//			}
+//		}
+//		
+//		return new Measure(capacity, load);
 	}
 
 	@Override

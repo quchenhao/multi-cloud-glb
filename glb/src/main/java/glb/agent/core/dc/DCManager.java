@@ -71,6 +71,10 @@ public class DCManager {
 		return remoteStatuses.get(dcId);
 	}
 	
+	public boolean containsDC(String dcId) {
+		return remoteStatuses.containsKey(dcId);
+	}
+	
 	static void initializeDCManager(Map<String, DCInfo> infos, String localDCId, int windowSize) {
 		dcManager = new DCManager(infos, localDCId, windowSize);
 	}

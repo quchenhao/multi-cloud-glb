@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 import glb.agent.core.EventQueue;
 import glb.agent.core.dc.DCManager;
-import glib.agent.event.Event;
-import glib.agent.event.RemoteDCStatusUpdateEvent;
+import glb.agent.event.Event;
+import glb.agent.event.RemoteDCStatusUpdateEvent;
 
 public class DefaultDCStatusUpdateListener extends DCStatusUpdateListener {
 	

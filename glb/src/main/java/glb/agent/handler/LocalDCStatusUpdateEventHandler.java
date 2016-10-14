@@ -6,9 +6,9 @@ import glb.agent.core.EventQueue;
 import glb.agent.core.dc.DCManager;
 import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.detector.OverloadDetector;
-import glib.agent.event.Event;
-import glib.agent.event.OverloadEndEvent;
-import glib.agent.event.OverloadEvent;
+import glb.agent.event.Event;
+import glb.agent.event.OverloadEndEvent;
+import glb.agent.event.OverloadEvent;
 
 public class LocalDCStatusUpdateEventHandler extends EventHandler {
 	
