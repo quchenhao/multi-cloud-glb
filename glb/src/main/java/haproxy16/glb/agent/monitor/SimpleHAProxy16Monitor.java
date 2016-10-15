@@ -1,4 +1,4 @@
-package glb.agent.monitor.haproxy16;
+package haproxy16.glb.agent.monitor;
 
 
 import java.io.BufferedReader;

@@ -1,17 +1,17 @@
 package glb.agent.event;
 
-import glb.agent.decision.OverloadHandlingPlan;
+import glb.agent.decision.LoadDistributionPlan;
 
 public class RedistributionEvent extends Event {
 
-	private OverloadHandlingPlan overloadHandlingPlan;
+	private LoadDistributionPlan overloadHandlingPlan;
 	
-	public RedistributionEvent(OverloadHandlingPlan overloadHandlingPlan) {
+	public RedistributionEvent(LoadDistributionPlan overloadHandlingPlan) {
 		super("RedistributionEvent");
 		this.overloadHandlingPlan = overloadHandlingPlan;
 	}
 	
-	public OverloadHandlingPlan getOverloadHandlingPlan() {
+	public LoadDistributionPlan getOverloadHandlingPlan() {
 		return overloadHandlingPlan;
 	}
 

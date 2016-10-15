@@ -3,13 +3,13 @@ package glb.agent.decision;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class OverloadHandlingPlan {
+public class LoadDistributionPlan {
 
 	private Map<String, Integer> outSourcePlan;
 	
 	private int loadToReject;
 	
-	public OverloadHandlingPlan(Map<String, Integer> outSourcePlan, int loadToReject) {
+	public LoadDistributionPlan(Map<String, Integer> outSourcePlan, int loadToReject) {
 		this.outSourcePlan = outSourcePlan;
 		this.loadToReject = loadToReject;
 	}

@@ -1,6 +1,6 @@
 package glb.agent.handler;
 
-import glb.agent.decision.OverloadHandlingPlan;
+import glb.agent.decision.LoadDistributionPlan;
 import glb.agent.event.Event;
 import glb.agent.event.RedistributionEvent;
 
@@ -13,5 +13,5 @@ public abstract class RedistributionEventHandler extends EventHandler{
 		redistribute(redistributionEvent.getOverloadHandlingPlan());
 	}
 
-	protected abstract void redistribute(OverloadHandlingPlan overloadHandlingPlan);
+	protected abstract void redistribute(LoadDistributionPlan loadDistributionPlan);
 }

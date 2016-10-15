@@ -1,8 +1,9 @@
-package glb.agent.decision.weight.haproxy16;
+package haproxy16.glb.agent.decision.weight;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import glb.agent.core.dc.Server;
 import glb.agent.decision.weight.WeightCalculator;
@@ -28,19 +29,24 @@ public class SimpleHAProxy16WeightCalculator extends WeightCalculator {
 			}
 		}
 		
-		int scaler = 2;
+		int scaler = 1;
 		
-		if (max > 256) {
-			while (max/scaler > 256) {
-				scaler++;
-			}
+		while (max/scaler > 256) {
+			scaler++;
 		}
 		
 		Map<String, Integer> serverWeights = new HashMap<String, Integer>();
 		
-		for () {}
+		for (Server server : healthyServers) {
+			serverWeights.put(server.getServerId(), server.getCapacity()/scaler);
+		}
 		
-		return null;
+		Map<String, Integer> outSourcedWeights = new HashMap<String, Integer>();
+		for (Entry<String, Integer> entry : outSourcedLoad.entrySet()) {
+			outSourcedWeights.put(entry.getKey(), entry.getValue()/scaler);
+		}
+		
+		return new WeightTable(serverWeights, outSourcedWeights);
 	}
 
 }
