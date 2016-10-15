@@ -87,4 +87,11 @@ public class LocalDCStatus extends DCStatus {
 		}
 		return capacity;
 	}
+
+	@Override
+	public int getMaxServiceRate() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

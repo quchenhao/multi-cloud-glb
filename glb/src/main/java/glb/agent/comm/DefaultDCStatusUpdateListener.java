@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import glb.agent.core.EventQueue;
 import glb.agent.core.dc.DCManager;
+import glb.agent.core.dc.RemoteDCStatus;
 import glb.agent.event.Event;
 import glb.agent.event.RemoteDCStatusUpdateEvent;
 
@@ -22,13 +23,16 @@ public class DefaultDCStatusUpdateListener extends DCStatusUpdateListener {
 	public void onMessage(Message message) {
 		try {
 			String dcId = message.getStringProperty("dc_id");
+			int maxServiceRate = message.getIntProperty("max_service_rate");
 			int capacity = message.getIntProperty("capacity");
 			int totalLoad = message.getIntProperty("total_load");
 			@SuppressWarnings("unchecked")
 			Map<String, Integer> outSourcedLoad = (Map<String, Integer>)message.getObjectProperty("outsourced_load");
 			
 			DCManager dcManager = DCManager.getDCManager();
-			dcManager.updateRemoteDCStatus(dcId, capacity, totalLoad, outSourcedLoad);
+			
+			RemoteDCStatus remoteDCStatus = dcManager.getRemoteDCStatus(dcId);
+			remoteDCStatus.update(maxServiceRate, capacity, totalLoad, outSourcedLoad);
 			
 			RemoteDCStatusUpdateEvent event = new RemoteDCStatusUpdateEvent(dcId);
 			Queue<Event> eventQueue = EventQueue.getEventQueue();

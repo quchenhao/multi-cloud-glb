@@ -12,25 +12,23 @@ public class LatencyOptimizationFunction implements StrictlyConvexMultivariateRe
 	
 	private DoubleFactory1D f1;
 	private DoubleFactory2D f2;
-	private DoubleMatrix1D capacities;
-	private DoubleMatrix1D loads;
+	private DoubleMatrix1D maxServiceRates;
 	private DoubleMatrix1D latencies;
 	private DoubleMatrix1D diffs;
 	private DoubleMatrix1D doubledcapacities;
 	private int dim;
 	
-	public LatencyOptimizationFunction(double[] capacities, double[] loads, double[] latencies) {
-		if (capacities.length != loads.length && loads.length != latencies.length) {
+	public LatencyOptimizationFunction(double[] maxServiceRates, double[] diffs, double[] latencies) {
+		if (maxServiceRates.length != diffs.length && diffs.length != latencies.length) {
 			throw new IllegalArgumentException("capacities, loads, and latencies should have the same size.");
 		}
 		this.f1 = DoubleFactory1D.dense;
 		this.f2 = DoubleFactory2D.sparse;
-		this.capacities = f1.make(capacities);
-		this.loads = f1.make(loads);
+		this.maxServiceRates = f1.make(maxServiceRates);
 		this.latencies = f1.make(latencies);
-		this.diffs = this.capacities.assign(this.loads, Functions.minus);
-		this.doubledcapacities = this.capacities.assign(Functions.mult(2));
-		this.dim = capacities.length;
+		this.diffs = f1.make(diffs);
+		this.doubledcapacities = this.maxServiceRates.assign(Functions.mult(2));
+		this.dim = maxServiceRates.length;
 	}
 
 	@Override
@@ -43,7 +41,7 @@ public class LatencyOptimizationFunction implements StrictlyConvexMultivariateRe
 		DoubleMatrix1D xMatrix = f1.make(x);
 		DoubleMatrix1D tempMatrix = diffs.assign(xMatrix, Functions.minus);
 		tempMatrix = tempMatrix.assign(Functions.square);
-		tempMatrix = capacities.assign(tempMatrix, Functions.div);
+		tempMatrix = maxServiceRates.assign(tempMatrix, Functions.div);
 		
 		return tempMatrix.assign(latencies, Functions.plus).toArray();
 	}
@@ -64,7 +62,7 @@ public class LatencyOptimizationFunction implements StrictlyConvexMultivariateRe
 		DoubleMatrix1D xMatrix = f1.make(x);
 		double temp = xMatrix.zDotProduct(latencies);
 		DoubleMatrix1D tempMatrix = diffs.assign(xMatrix, Functions.minus);
-		double temp2 = capacities.aggregate(tempMatrix, Functions.plus, Functions.div);
+		double temp2 = maxServiceRates.aggregate(tempMatrix, Functions.plus, Functions.div);
 		return temp + temp2;
 	}
 

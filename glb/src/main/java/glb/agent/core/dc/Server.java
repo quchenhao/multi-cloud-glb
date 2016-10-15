@@ -3,14 +3,16 @@ package glb.agent.core.dc;
 public class Server {
 	
 	private String serverId;
+	private int maxServiceRate;
 	private int capacity;
 	private String address;
 	private int port;
 	private boolean isHealthy;
 	private ServerStatus serverStatus;
 	
-	public Server(String serverId, int capacity, String address, int port, ServerStatus serverStatus, boolean isHealthy) {
+	public Server(String serverId, int maxServiceRate, int capacity, String address, int port, ServerStatus serverStatus, boolean isHealthy) {
 		this.serverId = serverId;
+		this.maxServiceRate = maxServiceRate;
 		this.capacity = capacity;
 		this.address = address;
 		this.port = port;
@@ -20,6 +22,10 @@ public class Server {
 
 	public String getServerId() {
 		return serverId;
+	}
+	
+	public int getMaxServiceRate() {
+		return maxServiceRate;
 	}
 
 	public int getCapacity() {

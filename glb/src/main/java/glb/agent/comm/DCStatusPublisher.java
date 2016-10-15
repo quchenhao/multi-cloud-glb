@@ -44,6 +44,7 @@ public class DCStatusPublisher {
 		TopicPublisher send = session.createPublisher(topic);
 		TextMessage tm = session.createTextMessage();
 		tm.setStringProperty("dc_id", localDCStatus.getDCId());
+		tm.setIntProperty("max_service_rate", localDCStatus.getMaxServiceRate());
 		tm.setIntProperty("capacity", localDCStatus.getCapacity());
 		tm.setIntProperty("total_load", localDCStatus.getTotalLoad());
 		tm.setObjectProperty("outsourced_load", localDCStatus.getOutsourcedLoad());

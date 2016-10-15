@@ -9,33 +9,32 @@ public class DCManager {
 
 	private static DCManager dcManager;
 	
-	private Map<String, DCStatus> remoteStatuses;
+	private Map<String, RemoteDCStatus> remoteStatuses;
 	
 	private Map<String, DCInfo> infos;
 	
 	private LocalDCStatus localDCStatus;
 	
 	private String localDCId;
-;
 	
 	private int windowSize;
 	
-	private DCManager (Map<String, DCInfo> infos, String localDCId, int windowSize) {
+	private DCManager (Map<String, DCInfo> infos, Map<String, Integer> latencies, String localDCId, int windowSize) {
 		this.infos = infos;
 		this.localDCId = localDCId;
 		this.windowSize = windowSize;
-		initializeDCStatuses();
+		initializeDCStatuses(latencies);
 	}
 
-	private void initializeDCStatuses() {
-		remoteStatuses = new HashMap<String, DCStatus>();
+	private void initializeDCStatuses(Map<String, Integer> latencies) {
+		remoteStatuses = new HashMap<String, RemoteDCStatus>();
 		
 		for (DCInfo dcInfo : infos.values()) {
 			String dcId = dcInfo.getDcId();
 			if (dcId.equals(localDCId)) {
 				continue;
 			}
-			DCStatus dcStatus = new DCStatus(dcId);
+			RemoteDCStatus dcStatus = new RemoteDCStatus(dcId, latencies.get(dcId));
 			remoteStatuses.put(dcId, dcStatus);
 		}
 		
@@ -46,28 +45,15 @@ public class DCManager {
 		return localDCStatus;
 	}
 	
-	public Collection<DCStatus> getRemoteDCStatuses() {
+	public Collection<RemoteDCStatus> getRemoteDCStatuses() {
 		return Collections.unmodifiableCollection(remoteStatuses.values());
-	}
-	
-	public void updateLocalDCStatus(int capacity, int load, Map<String, Integer> outSourcedLoad) {
-		localDCStatus.update(capacity, load, outSourcedLoad);
-	}
-	
-	public void updateRemoteDCStatus(String dcId, int capacity, int totalLoad, Map<String, Integer> outSourcedLoad) {
-		DCStatus dcStatus = remoteStatuses.get(dcId);
-		if (dcStatus == null) {
-			throw new NullPointerException("unknown " + dcId);
-		}
-		
-		dcStatus.update(capacity, totalLoad, outSourcedLoad);
 	}
 	
 	public String getLocalDCId() {
 		return localDCId;
 	}
 	
-	public DCStatus getRemoteDCStatus(String dcId) {
+	public RemoteDCStatus getRemoteDCStatus(String dcId) {
 		return remoteStatuses.get(dcId);
 	}
 	
@@ -79,8 +65,8 @@ public class DCManager {
 		return infos.get(dcId);
 	}
 	
-	static void initializeDCManager(Map<String, DCInfo> infos, String localDCId, int windowSize) {
-		dcManager = new DCManager(infos, localDCId, windowSize);
+	static void initializeDCManager(Map<String, DCInfo> infos, Map<String, Integer> latencies, String localDCId, int windowSize) {
+		dcManager = new DCManager(infos, latencies, localDCId, windowSize);
 	}
 	
 	public static DCManager getDCManager() {
