@@ -72,6 +72,10 @@ public class LocalDCStatus extends DCStatus {
 		return Collections.unmodifiableCollection(healthyServers);
 	}
 	
+	public List<Integer> getRecentLoads() {
+		return Collections.unmodifiableList(recentLoads);
+	}
+	
 	@Override
 	public synchronized int getCapacity() {
 		
