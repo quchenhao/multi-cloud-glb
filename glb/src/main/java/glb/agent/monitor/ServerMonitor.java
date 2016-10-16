@@ -1,6 +1,7 @@
 package glb.agent.monitor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Queue;
 
 import glb.agent.core.EventQueue;
@@ -13,6 +14,18 @@ import glb.agent.event.LocalDCStatusUpdateEvent;
 
 public abstract class ServerMonitor extends Monitor{
 
+	protected String tagHead;
+	protected Map<String, Integer> capacityMap;
+	protected Map<String, Integer> maxServiceRateMap;
+	protected int port;
+	
+	public ServerMonitor(String tagName, Map<String, Integer> maxServiceRateMap, Map<String, Integer> capacityMap, int port) {
+		this.tagHead = tagName;
+		this.maxServiceRateMap = maxServiceRateMap;
+		this.capacityMap = capacityMap;
+		this.port = port;
+	}
+	
 	@Override
 	public void monitor() {
 		boolean isChange = false;

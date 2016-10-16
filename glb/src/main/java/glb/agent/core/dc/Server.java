@@ -10,14 +10,13 @@ public class Server {
 	private boolean isHealthy;
 	private ServerStatus serverStatus;
 	
-	public Server(String serverId, int maxServiceRate, int capacity, String address, int port, ServerStatus serverStatus, boolean isHealthy) {
+	public Server(String serverId, int maxServiceRate, int capacity, String address, int port) {
 		this.serverId = serverId;
 		this.maxServiceRate = maxServiceRate;
 		this.capacity = capacity;
 		this.address = address;
 		this.port = port;
-		this.serverStatus = serverStatus;
-		this.isHealthy = isHealthy;
+		this.serverStatus = ServerStatus.PENDING;
 	}
 
 	public String getServerId() {
@@ -54,5 +53,9 @@ public class Server {
 	
 	public synchronized void setServerStatus(ServerStatus serverStatus) {
 		this.serverStatus = serverStatus;
+	}
+	
+	public synchronized void setIsHealthey(boolean isHealthy) {
+		this.isHealthy = isHealthy;
 	}
 }

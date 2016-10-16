@@ -19,6 +19,8 @@ import glb.agent.decision.LoadDistributionPlanGenerator;
 
 public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionPlanGenerator{
 
+	private double small = 0.01;
+	
 	@Override
 	public LoadDistributionPlan generateOverloadHandlingPlan(LocalDCStatus localDCStatus,
 			Collection<RemoteDCStatus> remoteDCStatuses) throws Exception {
@@ -31,8 +33,6 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 		double[] availableCapacities = new double[size];
 		double[] diffs = new double[size];
 		double[] latencies = new double[size];
-		
-		double small = 0.001;
 		
 		Map<String, Integer> outSourcedLoad = localDCStatus.getOutsourcedLoad();
 		
@@ -48,19 +48,19 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 				load = load - outSourcedLoad.get(dcStatus.getDCId());
 			}
 			
-			if (load > maxServiceRates[i]) {
-				diffs[i] = small;
+			if (maxServiceRates[i] > load) {
+				diffs[i] = maxServiceRates[i] - load + 2 * small;
 			}
 			else {
-				diffs[i] = maxServiceRates[i] - load;
+				diffs[i] = 2 * small;
 			}
 			
-			if (capacities[i] < load) {
-				availableCapacities[i] = capacities[i] - load;
+			if (capacities[i] > load) {
+				availableCapacities[i] = capacities[i] - load + 2 * small;
 				totalAvailableCapacity += availableCapacities[i];
 			}
 			else {
-				availableCapacities[i] = small;
+				availableCapacities[i] = 2 * small;
 			}
 			
 			latencies[i] = dcStatus.getLatency();
@@ -68,11 +68,11 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 		
 		int excess = localDCStatus.getCapacity() - localDCStatus.getMostRecentLoad();
 		int loadToReject = 0;
-		int totalOutSource = excess;
+		double totalOutSource = excess + small * size;
 		
-		if (excess > totalAvailableCapacity) {
-			loadToReject = excess - totalAvailableCapacity;
-			totalOutSource = totalAvailableCapacity;
+		if (excess > totalAvailableCapacity - 2 * small * size) {
+			loadToReject = (int)(excess - totalAvailableCapacity + 2 * small * size);
+			totalOutSource = totalAvailableCapacity - small * size;
 		}
 		
 		LatencyOptimizationFunction latencyOptimizationFunction = new LatencyOptimizationFunction(capacities, diffs, latencies);
@@ -100,18 +100,20 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 			equality[0][i] = 1;
 		}
 		
+		double[] initalSolution = generateInitialSolution(availableCapacities, totalOutSource);
+		
 		OptimizationRequest optimizationRequest = new OptimizationRequest();
 		optimizationRequest.setF0(latencyOptimizationFunction);
-		optimizationRequest.setInitialPoint(new double[] { 0.9, 0.1 });
+		optimizationRequest.setInitialPoint(initalSolution);
 		optimizationRequest.setFi((ConvexMultivariateRealFunction[])inequalities.toArray());
 		
 		optimizationRequest.setA(equality);
 		optimizationRequest.setB(new double[] { totalOutSource });
-		optimizationRequest.setTolerance(1.E-9);
+		optimizationRequest.setTolerance(small);
 		
 		PrimalDualMethod optimization = new PrimalDualMethod();
 		optimization.setOptimizationRequest(optimizationRequest);
-		int returnCode = optimization.optimize();
+		optimization.optimize();
 		
 		OptimizationResponse optimizationResponse = optimization.getOptimizationResponse();
 		
@@ -131,6 +133,34 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 		LoadDistributionPlan loadDistributionPlan = new LoadDistributionPlan(outSourcePlan, loadToReject);
 		
 		return loadDistributionPlan;
+	}
+
+	private double[] generateInitialSolution(double[] availableCapacities, double totalOutSource) {
+		double[] solution = new double [availableCapacities.length];
+		
+		double remain = totalOutSource;
+		for (int i = 0; i < availableCapacities.length; i++) {
+			solution[i] = small;
+			remain -= small;
+		}
+		
+		for (int i = 0; i < availableCapacities.length; i++) {
+			if (remain != 0) {
+				if (availableCapacities[i] - 2 * small <= remain) {
+					solution[i] += (availableCapacities[i] - 2 * small);
+					remain -= (availableCapacities[i] - 2 * small);
+				}
+				else {
+					solution[i] += remain;
+					remain = 0;
+				}
+			}
+			else {
+				break;
+			}
+		}
+		
+		return solution;
 	}
 
 }
