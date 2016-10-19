@@ -1,4 +1,4 @@
-package haproxy16.glb.agent.decision.weight;
+package haproxy16.glb.agent.handler.weight;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import glb.agent.core.dc.Server;
-import glb.agent.decision.weight.WeightCalculator;
-import glb.agent.decision.weight.WeightTable;
+import glb.agent.handler.weight.WeightCalculator;
+import glb.agent.handler.weight.WeightTable;
 
 public class SimpleHAProxy16WeightCalculator extends WeightCalculator {
 

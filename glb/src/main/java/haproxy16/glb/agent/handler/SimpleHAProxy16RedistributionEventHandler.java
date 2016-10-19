@@ -13,9 +13,9 @@ import glb.agent.core.dc.DCManager;
 import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.core.dc.Server;
 import glb.agent.decision.LoadDistributionPlan;
-import glb.agent.decision.weight.WeightCalculator;
-import glb.agent.decision.weight.WeightTable;
 import glb.agent.handler.RedistributionEventHandler;
+import glb.agent.handler.weight.WeightCalculator;
+import glb.agent.handler.weight.WeightTable;
 
 public class SimpleHAProxy16RedistributionEventHandler extends RedistributionEventHandler{
 	
@@ -23,9 +23,10 @@ public class SimpleHAProxy16RedistributionEventHandler extends RedistributionEve
 	private Runtime runtime;
 	private WeightCalculator weightCalculator;
 	
-	public SimpleHAProxy16RedistributionEventHandler(WeightCalculator weightCalculator) {
+	public SimpleHAProxy16RedistributionEventHandler(WeightCalculator weightCalculator, String baseFilePath) {
 		runtime = Runtime.getRuntime();
 		this.weightCalculator = weightCalculator;
+		this.baseFilePath = baseFilePath;
 	}
 	
 	public SimpleHAProxy16RedistributionEventHandler(String baseFilePath) {}

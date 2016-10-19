@@ -1,4 +1,4 @@
-package glb.agent.decision.weight;
+package glb.agent.handler.weight;
 
 import java.util.Collection;
 import java.util.Map;

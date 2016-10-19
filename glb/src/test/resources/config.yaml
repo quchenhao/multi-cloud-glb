@@ -1,0 +1,41 @@
+capacity_map:
+	- type:	m3.medium
+	  capacity:	23
+	  service_rate:	30
+	- type:	m3.large
+	  capacity: 46
+	  service_rate:	60
+	- type: m3.xlarge
+	  capacity: 92
+	  service_rate:	90
+
+redistribution_event_handler:
+	class:	haproxy16.glb.agent.handler.SimpleHAProxy16RedistributionEventHandler
+	weight_calculator:	haproxy16.glb.agent.handler.weight.SimpleHAProxy16WeightCalculator
+	base_file_path: base.cfg
+	
+load_monitor:
+	class:	haproxy16.glb.agent.monitor.SimpleHAProxy16Monitor
+	address:	localhost
+	port:	8080
+	username:	username
+	password:	pass
+
+server_monitor:
+	class:	aws.glb.agent.monitor.AWSServerMonitor
+	tag_head:	server
+	port:	80
+	access_key:
+	secret_key:
+
+remote_dc:
+	- id:	ireland
+	  address:	12.41.21.4
+	  port:	80
+	- id:	tokyo
+	  address:	14.43.13.1
+	  port:	80
+	  
+jms_environment:
+	context_factory:	org.exolab.jms.jndi.InitialContextFactory
+    provider_url:	tcp://localhost:3035/
