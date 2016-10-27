@@ -19,12 +19,12 @@ public class DCStatusSubscriber {
     private TopicSubscriber recv = null;
     private String datacenterId;
     
-    public DCStatusSubscriber (String datacenterId, Hashtable<?, ?> environment, DCStatusUpdateListener stateUpdateListener) throws NamingException, JMSException {
+    public DCStatusSubscriber (String datacenterId, Hashtable<?, ?> environment, DCStatusUpdateListener statusUpdateListener) throws NamingException, JMSException {
     	this.datacenterId = datacenterId;
-    	setupSubscriber(environment, stateUpdateListener);
+    	setupSubscriber(environment, statusUpdateListener);
     }
 
-	private void setupSubscriber(Hashtable<?, ?> environment, DCStatusUpdateListener stateUpdateListener) throws NamingException, JMSException {
+	public void setupSubscriber(Hashtable<?, ?> environment, DCStatusUpdateListener stateUpdateListener) throws NamingException, JMSException {
 		InitialContext iniCtx = new InitialContext();
         Object tmp = iniCtx.lookup("ConnectionFactory");
         TopicConnectionFactory tcf = (TopicConnectionFactory) tmp;

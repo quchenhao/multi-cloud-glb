@@ -65,7 +65,7 @@ public class DCManager {
 		return infos.get(dcId);
 	}
 	
-	static void initializeDCManager(Map<String, DCInfo> infos, Map<String, Integer> latencies, String localDCId, int windowSize) {
+	public static void initializeDCManager(Map<String, DCInfo> infos, Map<String, Integer> latencies, String localDCId, int windowSize) {
 		dcManager = new DCManager(infos, latencies, localDCId, windowSize);
 	}
 	

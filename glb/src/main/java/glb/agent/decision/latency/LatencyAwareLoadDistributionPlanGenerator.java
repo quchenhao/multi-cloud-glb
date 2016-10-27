@@ -21,6 +21,8 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 
 	private double small = 0.01;
 	
+	LatencyAwareLoadDistributionPlanGenerator() {}
+	
 	@Override
 	public LoadDistributionPlan generateOverloadHandlingPlan(LocalDCStatus localDCStatus,
 			Collection<RemoteDCStatus> remoteDCStatuses) throws Exception {

@@ -23,7 +23,7 @@ public class SimpleHAProxy16RedistributionEventHandler extends RedistributionEve
 	private Runtime runtime;
 	private WeightCalculator weightCalculator;
 	
-	public SimpleHAProxy16RedistributionEventHandler(WeightCalculator weightCalculator, String baseFilePath) {
+	SimpleHAProxy16RedistributionEventHandler(WeightCalculator weightCalculator, String baseFilePath) {
 		runtime = Runtime.getRuntime();
 		this.weightCalculator = weightCalculator;
 		this.baseFilePath = baseFilePath;

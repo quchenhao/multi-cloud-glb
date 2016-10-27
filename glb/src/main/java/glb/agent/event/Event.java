@@ -2,14 +2,14 @@ package glb.agent.event;
 
 public abstract class Event {
 
-	private String name;
+	private EventType eventType;
 	
-	public Event(String name) {
-		this.name = name;
+	public Event(EventType eventType) {
+		this.eventType = eventType;
 	}
 	
 
-	public String getName() {
-		return name;
+	public EventType getEventType() {
+		return eventType;
 	}
 }

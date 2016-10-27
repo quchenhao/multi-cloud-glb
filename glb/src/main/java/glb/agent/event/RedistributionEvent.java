@@ -7,7 +7,7 @@ public class RedistributionEvent extends Event {
 	private LoadDistributionPlan overloadHandlingPlan;
 	
 	public RedistributionEvent(LoadDistributionPlan overloadHandlingPlan) {
-		super("RedistributionEvent");
+		super(EventType.RedistributionEvent);
 		this.overloadHandlingPlan = overloadHandlingPlan;
 	}
 	

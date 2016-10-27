@@ -9,20 +9,19 @@ import glb.agent.core.dc.DCManager;
 import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.core.dc.Server;
 import glb.agent.core.dc.ServerStatus;
+import glb.agent.core.dc.ServerType;
 import glb.agent.event.Event;
 import glb.agent.event.LocalDCStatusUpdateEvent;
 
 public abstract class ServerMonitor extends Monitor{
 
 	protected String tagHead;
-	protected Map<String, Integer> capacityMap;
-	protected Map<String, Integer> maxServiceRateMap;
+	protected Map<String, ServerType> serverTypes;
 	protected int port;
 	
-	public ServerMonitor(String tagName, Map<String, Integer> maxServiceRateMap, Map<String, Integer> capacityMap, int port) {
+	public ServerMonitor(String tagName, Map<String, ServerType> serverTypes, int port) {
 		this.tagHead = tagName;
-		this.maxServiceRateMap = maxServiceRateMap;
-		this.capacityMap = capacityMap;
+		this.serverTypes = serverTypes;
 		this.port = port;
 	}
 	

@@ -5,7 +5,7 @@ public class RemoteDCStatusUpdateEvent extends DCStatusUpdateEvent{
 	private String dcId;
 	
 	public RemoteDCStatusUpdateEvent(String dcId) {
-		super("RemoteDCStatusUpdateEvent");
+		super(EventType.RemoteDCStatusUpdateEvent);
 		this.dcId = dcId;
 	}
 

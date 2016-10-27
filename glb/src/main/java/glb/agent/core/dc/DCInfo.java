@@ -8,7 +8,7 @@ public class DCInfo {
 	
 	private int port;
 	
-	DCInfo(String dcId, String address, int port) {
+	public DCInfo(String dcId, String address, int port) {
 		this.dcId = dcId;
 		this.address = address;
 		this.port = port;

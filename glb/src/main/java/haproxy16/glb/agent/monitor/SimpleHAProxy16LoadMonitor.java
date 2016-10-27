@@ -18,14 +18,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import glb.agent.monitor.LoadMonitor;
 
 
-public class SimpleHAProxy16Monitor extends LoadMonitor {
+public class SimpleHAProxy16LoadMonitor extends LoadMonitor {
 	
 	private HttpGet request;
 	private HttpClient client;
 	private int adjust;
 	
 	
-	public SimpleHAProxy16Monitor(String address, int port, String url, String user, String password) {
+	SimpleHAProxy16LoadMonitor(String address, int port, String url, String user, String password) {
 		String get = "http://" + address + ":" + port + "/" + url + ";csv";
 		this.request = new HttpGet(get);
 		

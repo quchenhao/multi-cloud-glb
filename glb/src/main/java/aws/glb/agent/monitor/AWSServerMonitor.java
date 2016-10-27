@@ -20,14 +20,15 @@ import com.amazonaws.services.ec2.model.Tag;
 import aws.util.AWSStatus;
 import glb.agent.core.dc.Server;
 import glb.agent.core.dc.ServerStatus;
+import glb.agent.core.dc.ServerType;
 import glb.agent.monitor.ServerMonitor;
 
 public class AWSServerMonitor extends ServerMonitor{
 	
 	private AmazonEC2Client ec2Client;
 
-	public AWSServerMonitor(AWSCredentials credentials, String tagHead, Map<String, Integer> maxServiceRateMap, Map<String, Integer> capacityMap, int port) {
-		super(tagHead, maxServiceRateMap, capacityMap, port);
+	AWSServerMonitor(AWSCredentials credentials, String tagHead, Map<String, ServerType> serverTypes, int port) {
+		super(tagHead, serverTypes, port);
 		this.ec2Client = new AmazonEC2Client(credentials);
 	}
 	
@@ -51,10 +52,9 @@ public class AWSServerMonitor extends ServerMonitor{
 				if (name.startsWith(tagHead)) {
 					String instanceId = instance.getInstanceId();
 					String type = instance.getInstanceType();
-					int maxServiceRate = maxServiceRateMap.get(type);
-					int capacity = capacityMap.get(type);
+					ServerType serverType = serverTypes.get(type);
 					ServerStatus serverStatus = AWSStatus.getServerSatus(instance.getState().getCode());
-					Server server = new Server(instanceId, maxServiceRate, capacity, instance.getPrivateIpAddress(), port);
+					Server server = new Server(instanceId, serverType, instance.getPrivateIpAddress(), port);
 					server.setServerStatus(serverStatus);
 					servers.add(server);
 					serverMap.put(instanceId, server);

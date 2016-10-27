@@ -7,12 +7,12 @@ import org.apache.logging.log4j.Logger;
 
 import glb.agent.comm.DCStatusPublisher;
 
-class DCStateUpdateThread implements Runnable{
+class DCStatusUpdateThread implements Runnable{
 
 	private DCStatusPublisher dcStatusPublisher;
-	private Logger log = LogManager.getLogger(DCStateUpdateThread.class);
+	private Logger log = LogManager.getLogger(DCStatusUpdateThread.class);
 	
-	public DCStateUpdateThread(DCStatusPublisher dcStatusPublisher) {
+	public DCStatusUpdateThread(DCStatusPublisher dcStatusPublisher) {
 		this.dcStatusPublisher = dcStatusPublisher;
 	}
 	

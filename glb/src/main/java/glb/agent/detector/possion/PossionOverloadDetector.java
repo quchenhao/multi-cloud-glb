@@ -6,6 +6,8 @@ import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.detector.OverloadDetector;
 
 public class PossionOverloadDetector extends OverloadDetector {
+	
+	PossionOverloadDetector() {}
 
 	@Override
 	public boolean isOverload(LocalDCStatus localDCStatus) {

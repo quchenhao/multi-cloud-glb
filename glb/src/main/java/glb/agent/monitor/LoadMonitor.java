@@ -8,7 +8,7 @@ import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.event.Event;
 import glb.agent.event.LocalDCStatusUpdateEvent;
 
-public abstract class LoadMonitor{
+public abstract class LoadMonitor extends Monitor{
 
 	public void monitor() throws Exception {
 		DCManager dcManager = DCManager.getDCManager();
