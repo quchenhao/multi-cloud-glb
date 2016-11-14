@@ -26,8 +26,8 @@ server_monitor:
   loader: aws.glb.agent.monitor.AWSServerMonitorLoader
   tag_head: server
   port: 80
-  access_key: 1234
-  secret_key: 1234
+  access_key: AKIAJV4HZTIMBPNDVVPA
+  secret_key: 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
 
 remote_dc:
   - id: ireland
