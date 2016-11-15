@@ -7,8 +7,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
+import javax.naming.Context;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -106,7 +105,13 @@ public class Agent {
 		
 		if (configs.containsKey("jms_environment")) {
 			jmsEnvironment = new Hashtable<Object, Object>();
-			jmsEnvironment.putAll((Map<Object, Object>)configs.get("jms_environment"));
+			Map<String, Object> environments = (Map<String, Object>) configs.get("jms_environment");
+			String contextFactory = (String) environments.get("context_factory");
+			System.out.println(contextFactory);
+			jmsEnvironment.put(Context.INITIAL_CONTEXT_FACTORY, contextFactory);
+			String providerURL = (String) environments.get("provider_url");
+			jmsEnvironment.put(Context.PROVIDER_URL, providerURL);
+			System.out.println(providerURL);
 		}
 		else {
 			System.err.println("jms_environment not found");
@@ -226,7 +231,7 @@ public class Agent {
 			try {
 				DCStatusSubscriber dcStatusSubscriber = new DCStatusSubscriber(dcInfo.getDcId(), jmsEnvironment, dcStatusUpdateListener);
 				dcStatusSubscribers.put(dcInfo.getDcId(), dcStatusSubscriber);
-			} catch (NamingException | JMSException e) {
+			} catch (Exception e) {
 				System.err.println("load dc_status_subscriber for dc " + dcInfo.getDcId() + " failed");
 				e.printStackTrace();
 				System.exit(1);

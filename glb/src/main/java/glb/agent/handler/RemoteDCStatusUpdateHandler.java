@@ -25,8 +25,11 @@ public class RemoteDCStatusUpdateHandler extends EventHandler {
 		if (remoteDCStatus.getCapacity() <= remoteDCStatus.getTotalLoad() && localDCStatus.getOutsourcedLoad().containsKey(remoteDCId)) {
 			OverloadEvent overloadEvent = new OverloadEvent();
 			Queue<Event> eventQueue = EventQueue.getEventQueue();
-			eventQueue.add(overloadEvent);
-			eventQueue.notifyAll();
+			
+			synchronized(eventQueue) {
+				eventQueue.add(overloadEvent);
+				eventQueue.notifyAll();
+			}
 		}
 	}
 

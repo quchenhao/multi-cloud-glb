@@ -15,8 +15,11 @@ public class OverloadEndEventHandler extends EventHandler{
 		LoadDistributionPlan loadDistributionPlan = new LoadDistributionPlan(new HashMap<String, Integer>(), 0);
 		RedistributionEvent redistributionEvent = new RedistributionEvent(loadDistributionPlan);
 		Queue<Event> eventQueue = EventQueue.getEventQueue();
-		eventQueue.add(redistributionEvent);
-		eventQueue.notifyAll();
+		
+		synchronized(eventQueue) {
+			eventQueue.add(redistributionEvent);
+			eventQueue.notifyAll();
+		}
 	}
 	
 }

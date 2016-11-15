@@ -26,13 +26,19 @@ public class LocalDCStatusUpdateEventHandler extends EventHandler {
 		Queue<Event> eventQueue = EventQueue.getEventQueue();
 		if (overloadDetector.isOverload(localDCStatus)) {
 			OverloadEvent overloadEvent = new OverloadEvent();
-			eventQueue.add(overloadEvent);
-			eventQueue.notifyAll();
+			
+			synchronized(eventQueue) {
+				eventQueue.add(overloadEvent);
+				eventQueue.notifyAll();
+			}
 		}
 		else if (!localDCStatus.getOutsourcedLoad().isEmpty()) {
 			OverloadEndEvent overloadEndEvent = new OverloadEndEvent();
-			eventQueue.add(overloadEndEvent);
-			eventQueue.notifyAll();
+			
+			synchronized(eventQueue) {
+				eventQueue.add(overloadEndEvent);
+				eventQueue.notifyAll();
+			}
 		}
 	}
 

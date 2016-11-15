@@ -36,8 +36,11 @@ public class OverloadEventHandler extends EventHandler {
 			
 			RedistributionEvent redistributionEvent = new RedistributionEvent(overloadHandlingPlan);
 			Queue<Event> eventQueue = EventQueue.getEventQueue();
-			eventQueue.add(redistributionEvent);
-			eventQueue.notifyAll();
+			
+			synchronized(eventQueue) {
+				eventQueue.add(redistributionEvent);
+				eventQueue.notifyAll();
+			}
 		} catch (Exception e) {
 			log.catching(e);
 		}

@@ -22,6 +22,16 @@
 			<version>1.1</version>
 		</dependency>
 		<dependency>
+			<groupId>openjms</groupId>
+			<artifactId>openjms</artifactId>
+			<version>0.7.6</version>
+		</dependency>
+		<dependency>
+			<groupId>exolabcore</groupId>
+			<artifactId>exolabcore</artifactId>
+			<version>0.3.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>2.1</version>

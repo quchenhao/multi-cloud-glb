@@ -36,8 +36,11 @@ public class DefaultDCStatusUpdateListener extends DCStatusUpdateListener {
 			
 			RemoteDCStatusUpdateEvent event = new RemoteDCStatusUpdateEvent(dcId);
 			Queue<Event> eventQueue = EventQueue.getEventQueue();
-			eventQueue.add(event);
-			eventQueue.notifyAll();
+			
+			synchronized(eventQueue) {
+				eventQueue.add(event);
+				eventQueue.notifyAll();
+			}
 		} catch (JMSException e) {
 			log.catching(e);
 		}

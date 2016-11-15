@@ -25,7 +25,11 @@ public class EventHandlingThread implements Runnable {
 		
 		while (true) {
 			if (!eventQueue.isEmpty()) {
-				Event event = eventQueue.poll();
+				Event event = null;
+				synchronized(eventQueue) {
+					event = eventQueue.poll();
+				}
+				
 				EventHandler eventHandler = handlers.get(event.getEventType());
 				if (eventHandler == null) {
 					log.error("cannot find handler for event type " + event.getEventType());
@@ -39,7 +43,9 @@ public class EventHandlingThread implements Runnable {
 			}
 			else {
 				try {
-					eventQueue.wait();
+					synchronized(eventQueue){
+						eventQueue.wait();
+					}
 				} catch (InterruptedException e) {
 					log.catching(e);
 				}

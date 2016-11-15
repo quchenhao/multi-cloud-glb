@@ -17,8 +17,11 @@ public abstract class LoadMonitor extends Monitor{
 		localDCStatus.updateLoad(load);
 		LocalDCStatusUpdateEvent event = new LocalDCStatusUpdateEvent();
 		Queue<Event> eventQueue = EventQueue.getEventQueue();
-		eventQueue.add(event);
-		eventQueue.notifyAll();
+		
+		synchronized(eventQueue) {
+			eventQueue.add(event);
+			eventQueue.notifyAll();
+		}
 	}
 	
 	protected abstract int getLoad() throws Exception;

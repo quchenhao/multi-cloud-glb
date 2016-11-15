@@ -19,6 +19,7 @@ public class LocalDCStatus extends DCStatus {
 		super(dcId);
 		this.windowSize = windowSize;
 		this.servers = new HashMap<String, Server>();
+		this.recentLoads = new ArrayList<Integer>();
 	}
 	
 	@Override

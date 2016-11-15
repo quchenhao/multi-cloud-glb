@@ -55,8 +55,10 @@ public abstract class ServerMonitor extends Monitor{
 		if (isChange) {
 			LocalDCStatusUpdateEvent localDCStatusUpdateEvent = new LocalDCStatusUpdateEvent();
 			Queue<Event> eventQueue = EventQueue.getEventQueue();
-			eventQueue.add(localDCStatusUpdateEvent);
-			eventQueue.notifyAll();
+			synchronized(eventQueue) {
+				eventQueue.add(localDCStatusUpdateEvent);
+				eventQueue.notifyAll();
+			}
 		}
 	}
 	

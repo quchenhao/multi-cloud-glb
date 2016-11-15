@@ -1,6 +1,7 @@
 package glb.agent.decision.latency;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ import glb.agent.decision.LoadDistributionPlanGenerator;
 
 public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionPlanGenerator{
 
-	private double small = 0.01;
+	private double small = 0.1;
 	
 	LatencyAwareLoadDistributionPlanGenerator() {}
 	
@@ -43,7 +44,9 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 		for (int i = 0; i < size; i++) {
 			RemoteDCStatus dcStatus = remoteDCStatusesList.get(i);
 			capacities[i] = dcStatus.getCapacity();
+			System.out.print(capacities[i] + " ");
 			maxServiceRates[i] = dcStatus.getMaxServiceRate();
+			System.out.print(maxServiceRates[i] + " ");
 			double load = dcStatus.getTotalLoad();
 			
 			if (outSourcedLoad.containsKey(dcStatus.getDCId())) {
@@ -57,6 +60,8 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 				diffs[i] = 2 * small;
 			}
 			
+			System.out.print(diffs[i] + " ");
+			
 			if (capacities[i] > load) {
 				availableCapacities[i] = capacities[i] - load + 2 * small;
 				totalAvailableCapacity += availableCapacities[i];
@@ -65,10 +70,14 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 				availableCapacities[i] = 2 * small;
 			}
 			
+			System.out.print(availableCapacities[i] + " ");
+			
 			latencies[i] = dcStatus.getLatency();
+			
+			System.out.println(latencies[i]);
 		}
 		
-		int excess = localDCStatus.getCapacity() - localDCStatus.getMostRecentLoad();
+		int excess =  localDCStatus.getMostRecentLoad() - localDCStatus.getCapacity();
 		int loadToReject = 0;
 		double totalOutSource = excess + small * size;
 		
@@ -77,21 +86,22 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 			totalOutSource = totalAvailableCapacity - small * size;
 		}
 		
-		LatencyOptimizationFunction latencyOptimizationFunction = new LatencyOptimizationFunction(capacities, diffs, latencies);
+		System.out.println(loadToReject);
+		System.out.println(totalOutSource);
+		
+		LatencyOptimizationFunction latencyOptimizationFunction = new LatencyOptimizationFunction(maxServiceRates, diffs, latencies);
 		List<ConvexMultivariateRealFunction> inequalities = new ArrayList<ConvexMultivariateRealFunction>();
 		
-		double[] allZeros = new double[size];
-		
 		for (int i = 0; i < size; i++) {
-			double[] zeroConstraint = allZeros.clone();
+			double[] zeroConstraint = new double[size];
 			zeroConstraint[i] = -1;
 			ConvexMultivariateRealFunction funtion1 = new LinearMultivariateRealFunction(zeroConstraint, 0);
 			inequalities.add(funtion1);
 			
 			if (availableCapacities[i] < totalOutSource) {
-				double[] capacityConstraint = allZeros.clone();
+				double[] capacityConstraint = new double[size];
 				capacityConstraint[i] = 1;
-				ConvexMultivariateRealFunction funtion2 = new LinearMultivariateRealFunction(capacityConstraint, availableCapacities[i]);
+				ConvexMultivariateRealFunction funtion2 = new LinearMultivariateRealFunction(capacityConstraint, -availableCapacities[i]);
 				inequalities.add(funtion2);
 			}
 		}
@@ -102,16 +112,24 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 			equality[0][i] = 1;
 		}
 		
-		double[] initalSolution = generateInitialSolution(availableCapacities, totalOutSource);
+		double[] initialSolution = generateInitialSolution(availableCapacities, totalOutSource);
+		
+		for (int k = 0; k < initialSolution.length; k++) {
+			System.out.print(initialSolution[k] + " ");
+		}
 		
 		OptimizationRequest optimizationRequest = new OptimizationRequest();
 		optimizationRequest.setF0(latencyOptimizationFunction);
-		optimizationRequest.setInitialPoint(initalSolution);
-		optimizationRequest.setFi((ConvexMultivariateRealFunction[])inequalities.toArray());
+		optimizationRequest.setInitialPoint(initialSolution);
+		
+		Object[] objects = inequalities.toArray();
+		ConvexMultivariateRealFunction[] inequalitiesConstraints = Arrays.copyOf(objects, objects.length, ConvexMultivariateRealFunction[].class);
+		
+		optimizationRequest.setFi(inequalitiesConstraints);
 		
 		optimizationRequest.setA(equality);
 		optimizationRequest.setB(new double[] { totalOutSource });
-		optimizationRequest.setTolerance(small);
+		optimizationRequest.setTolerance(1.E-9);
 		
 		PrimalDualMethod optimization = new PrimalDualMethod();
 		optimization.setOptimizationRequest(optimizationRequest);
@@ -161,6 +179,8 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 				break;
 			}
 		}
+		
+		
 		
 		return solution;
 	}
