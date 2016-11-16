@@ -129,7 +129,7 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 		
 		optimizationRequest.setA(equality);
 		optimizationRequest.setB(new double[] { totalOutSource });
-		optimizationRequest.setTolerance(1.E-9);
+		optimizationRequest.setTolerance(0.1);
 		
 		PrimalDualMethod optimization = new PrimalDualMethod();
 		optimization.setOptimizationRequest(optimizationRequest);

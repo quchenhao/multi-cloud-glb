@@ -26,10 +26,12 @@ import glb.agent.monitor.ServerMonitor;
 public class AWSServerMonitor extends ServerMonitor{
 	
 	private AmazonEC2Client ec2Client;
+	private String dcId;
 
-	AWSServerMonitor(AWSCredentials credentials, String tagHead, Map<String, ServerType> serverTypes, int port) {
+	AWSServerMonitor(AWSCredentials credentials, String tagHead, Map<String, ServerType> serverTypes, int port, String dcId) {
 		super(tagHead, serverTypes, port);
 		this.ec2Client = new AmazonEC2Client(credentials);
+		this.dcId = dcId;
 	}
 	
 	@Override
@@ -41,23 +43,25 @@ public class AWSServerMonitor extends ServerMonitor{
 		Map<String, Server> serverMap = new HashMap<String, Server>();
 		for (Reservation reservation : result.getReservations()) {
 			for (Instance instance : reservation.getInstances()) {
-				List<Tag> tags = instance.getTags();
-				String name = "";
-				for (Tag tag : tags) {
-					if (tag.getKey().equals("Name")) {
-						name = tag.getValue();
-						break;
+				if (instance.getPlacement().getAvailabilityZone().startsWith(dcId)) {
+					List<Tag> tags = instance.getTags();
+					String name = "";
+					for (Tag tag : tags) {
+						if (tag.getKey().equals("Name")) {
+							name = tag.getValue();
+							break;
+						}
 					}
-				}
-				if (name.startsWith(tagHead)) {
-					String instanceId = instance.getInstanceId();
-					String type = instance.getInstanceType();
-					ServerType serverType = serverTypes.get(type);
-					ServerStatus serverStatus = AWSStatus.getServerSatus(instance.getState().getCode());
-					Server server = new Server(instanceId, serverType, instance.getPrivateIpAddress(), port);
-					server.setServerStatus(serverStatus);
-					servers.add(server);
-					serverMap.put(instanceId, server);
+					if (name.startsWith(tagHead)) {
+						String instanceId = instance.getInstanceId();
+						String type = instance.getInstanceType();
+						ServerType serverType = serverTypes.get(type);
+						ServerStatus serverStatus = AWSStatus.getServerSatus(instance.getState().getCode());
+						Server server = new Server(instanceId, serverType, instance.getPrivateIpAddress(), port);
+						server.setServerStatus(serverStatus);
+						servers.add(server);
+						serverMap.put(instanceId, server);
+					}
 				}
 			}
 		}

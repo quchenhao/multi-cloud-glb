@@ -5,6 +5,7 @@ import java.util.Map;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 
+import glb.agent.core.dc.DCManager;
 import glb.agent.core.dc.ServerType;
 import glb.agent.monitor.ServerMonitor;
 import glb.agent.monitor.ServerMonitorLoader;
@@ -22,6 +23,9 @@ public class AWSServerMonitorLoader extends ServerMonitorLoader{
 		String secretKey = (String)map.get("secret_key");
 		
 		AWSCredentials credential = new BasicAWSCredentials(accessKey, secretKey);
-		return new AWSServerMonitor(credential, tagHead, serverTypes, port);
+		
+		String localDCId = DCManager.getDCManager().getLocalDCId();
+		
+		return new AWSServerMonitor(credential, tagHead, serverTypes, port, localDCId);
 	}
 }

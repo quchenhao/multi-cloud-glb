@@ -70,15 +70,6 @@ public class Agent {
 //			System.out.println(entry.getKey() + entry.getValue().toString());
 //		}
 		
-		Map<String, ServerType> serverTypes = null;
-		if (configs.containsKey("server_types")) {
-			serverTypes = loadServerTypes((List<Map<String, Object>>)configs.get("server_types"));
-		}
-		else {
-			System.err.println("server_types not found");
-			System.exit(1);
-		}
-		
 		String localDCId = null;
 		
 		if (configs.containsKey("local_dc")) {
@@ -86,6 +77,15 @@ public class Agent {
 		}
 		else {
 			System.err.println("local_dc not found");
+			System.exit(1);
+		}
+		
+		Map<String, ServerType> serverTypes = null;
+		if (configs.containsKey("server_types")) {
+			serverTypes = loadServerTypes((List<Map<String, Object>>)configs.get("server_types"));
+		}
+		else {
+			System.err.println("server_types not found");
 			System.exit(1);
 		}
 		
@@ -100,6 +100,18 @@ public class Agent {
 			System.err.println("remote_dc not found");
 			System.exit(1);
 		}
+		
+		int windowSize = 0;
+		
+		if (configs.containsKey("window")) {
+			windowSize = (Integer)((Map<String, Object>)configs.get("window")).get("size");
+		}
+		else {
+			System.err.println("window not found");
+			System.exit(1);
+		}
+		
+		DCManager.initializeDCManager(remoteDCs, latencies, localDCId, windowSize);
 		
 		Hashtable<Object, Object> jmsEnvironment = null;
 		
@@ -166,16 +178,6 @@ public class Agent {
 			System.exit(1);
 		}
 		
-		int windowSize = 0;
-		
-		if (configs.containsKey("window")) {
-			windowSize = (Integer)((Map<String, Object>)configs.get("window")).get("size");
-		}
-		else {
-			System.err.println("window not found");
-			System.exit(1);
-		}
-		
 		OverloadDetector overloadDetector = null;
 		
 		if (configs.containsKey("overload_detector")) {
@@ -208,41 +210,39 @@ public class Agent {
 			System.exit(1);
 		}
 		
-		DCManager.initializeDCManager(remoteDCs, latencies, localDCId, windowSize);
-		
 		Map<EventType, EventHandler> eventHandlers = loadEventHandlers(redistributionEventHandler, overloadDetector, loadDistributionPlanGenerator);
 		
 		Thread eventHandlingThread = new Thread(new EventHandlingThread(eventHandlers));
 		eventHandlingThread.start();
 		
-		DCStatusPublisher publisher = null;
-		try {
-			publisher = new DCStatusPublisher(localDCId, jmsEnvironment);
-		} catch (Exception e) {
-			System.err.println("load dc_status_publisher failed");
-			e.printStackTrace();
-			System.exit(1);
-		}
+//		DCStatusPublisher publisher = null;
+//		try {
+//			publisher = new DCStatusPublisher(localDCId, jmsEnvironment);
+//		} catch (Exception e) {
+//			System.err.println("load dc_status_publisher failed");
+//			e.printStackTrace();
+//			System.exit(1);
+//		}
 		
-		dcStatusSubscribers = new HashMap<String, DCStatusSubscriber>();
-		DCStatusUpdateListener dcStatusUpdateListener = new DefaultDCStatusUpdateListener();
+//		dcStatusSubscribers = new HashMap<String, DCStatusSubscriber>();
+//		DCStatusUpdateListener dcStatusUpdateListener = new DefaultDCStatusUpdateListener();
+//		
+//		for (DCInfo dcInfo : remoteDCs.values()) {
+//			try {
+//				DCStatusSubscriber dcStatusSubscriber = new DCStatusSubscriber(dcInfo.getDcId(), jmsEnvironment, dcStatusUpdateListener);
+//				dcStatusSubscribers.put(dcInfo.getDcId(), dcStatusSubscriber);
+//			} catch (Exception e) {
+//				System.err.println("load dc_status_subscriber for dc " + dcInfo.getDcId() + " failed");
+//				e.printStackTrace();
+//				System.exit(1);
+//			}
+//		}
 		
-		for (DCInfo dcInfo : remoteDCs.values()) {
-			try {
-				DCStatusSubscriber dcStatusSubscriber = new DCStatusSubscriber(dcInfo.getDcId(), jmsEnvironment, dcStatusUpdateListener);
-				dcStatusSubscribers.put(dcInfo.getDcId(), dcStatusSubscriber);
-			} catch (Exception e) {
-				System.err.println("load dc_status_subscriber for dc " + dcInfo.getDcId() + " failed");
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
+		//Thread dcStatusUpdateThread = new Thread(new DCStatusUpdateThread(publisher));
+		//dcStatusUpdateThread.start();
 		
-		Thread dcStatusUpdateThread = new Thread(new DCStatusUpdateThread(publisher));
-		dcStatusUpdateThread.start();
-		
-		Thread loadMonitorThread = new Thread(new MonitorThread(loadMonitor, 2000));
-		loadMonitorThread.start();
+		//Thread loadMonitorThread = new Thread(new MonitorThread(loadMonitor, 2000));
+		//loadMonitorThread.start();
 		
 		Thread serverMonitorThread = new Thread(new MonitorThread(serverMonitor, 2000));
 		
