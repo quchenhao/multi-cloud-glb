@@ -3,10 +3,12 @@ server_types:
     capacity: 35
     service_rate: 41
 
-redistribution_event_handler:
-  loader: haproxy16.glb.agent.handler.SimpleHAProxy16RedistributionEventHandlerLoader
+redistribution_executor:
+  loader: haproxy16.glb.agent.decision.executor.SimpleHAProxy16RedistributionExecutorLoader
   weight_calculator: haproxy16.glb.agent.handler.weight.SimpleHAProxy16WeightCalculator
   base_file_path: base.cfg
+
+load_change_ratio_threshold: 0.1
 
 load_monitor:
   loader: haproxy16.glb.agent.monitor.SimpleHAProxy16LoadMonitorLoader
@@ -15,6 +17,7 @@ load_monitor:
   url: stats
   username: username
   password: pass
+
 
 server_monitor:
   loader: aws.glb.agent.monitor.AWSServerMonitorLoader

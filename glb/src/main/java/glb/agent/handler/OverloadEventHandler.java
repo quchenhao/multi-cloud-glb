@@ -25,7 +25,7 @@ public class OverloadEventHandler extends EventHandler {
 	}
 
 	@Override
-	public void handle(Event event) {
+	public Feedback handle(Event event) {
 		DCManager dcManager = DCManager.getDCManager();
 		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
 		Collection<RemoteDCStatus> remoteDCStatuses = dcManager.getRemoteDCStatuses();
@@ -39,13 +39,13 @@ public class OverloadEventHandler extends EventHandler {
 			
 			synchronized(eventQueue) {
 				eventQueue.add(redistributionEvent);
-				eventQueue.notifyAll();
+				eventQueue.notify();
 			}
 		} catch (Exception e) {
 			log.catching(e);
 		}
 		
-		
+		return new Feedback(LocalDCStatusChangeLevel.NO_CHANGE);
 	}
 
 }

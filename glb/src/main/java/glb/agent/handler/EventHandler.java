@@ -9,5 +9,5 @@ public abstract class EventHandler {
 	
 	protected Logger log = LogManager.getLogger(EventHandler.class);
 
-	public abstract void handle(Event event);
+	public abstract Feedback handle(Event event);
 }

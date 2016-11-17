@@ -17,20 +17,24 @@ import glb.agent.comm.DCStatusPublisher;
 import glb.agent.comm.DCStatusSubscriber;
 import glb.agent.comm.DCStatusUpdateListener;
 import glb.agent.comm.DefaultDCStatusUpdateListener;
+import glb.agent.comm.PublishReminder;
+import glb.agent.comm.DCStatusUpdateThread;
 import glb.agent.core.dc.DCInfo;
 import glb.agent.core.dc.DCManager;
 import glb.agent.core.dc.ServerType;
 import glb.agent.decision.LoadDistributionPlanGenerator;
 import glb.agent.decision.LoadDistributionPlanGeneratorLoader;
+import glb.agent.decision.executor.RedistributionExecutor;
+import glb.agent.decision.executor.RedistributionExecutorLoader;
 import glb.agent.detector.OverloadDetector;
 import glb.agent.detector.OverloadDetectorLoader;
 import glb.agent.event.EventType;
 import glb.agent.handler.EventHandler;
+import glb.agent.handler.LocalDCLoadUpdateEventHandler;
 import glb.agent.handler.LocalDCStatusUpdateEventHandler;
 import glb.agent.handler.OverloadEndEventHandler;
 import glb.agent.handler.OverloadEventHandler;
 import glb.agent.handler.RedistributionEventHandler;
-import glb.agent.handler.RedistributionEventHandlerLoader;
 import glb.agent.monitor.LoadMonitor;
 import glb.agent.monitor.LoadMonitorLoader;
 import glb.agent.monitor.ServerMonitor;
@@ -69,6 +73,8 @@ public class Agent {
 //		for (Entry<String, Object> entry : configs.entrySet()) {
 //			System.out.println(entry.getKey() + entry.getValue().toString());
 //		}
+		
+		PublishReminder publishReminder = new PublishReminder();
 		
 		String localDCId = null;
 		
@@ -130,19 +136,19 @@ public class Agent {
 			System.exit(1);
 		}
 		
-		RedistributionEventHandler redistributionEventHandler = null;
+		RedistributionExecutor redistributionExecutor = null;
 		
-		if (configs.containsKey("redistribution_event_handler")) {
+		if (configs.containsKey("redistribution_executor")) {
 			try {
-				redistributionEventHandler = loadRedistributionEventHandler((Map<String, Object>)configs.get("redistribution_event_handler"));
+				redistributionExecutor = loadRedistributionExecutor((Map<String, Object>)configs.get("redistribution_event_handler"));
 			} catch (Exception e) {
-				System.err.println("load redistribution_event_handler failed");
+				System.err.println("load redistribution_executor failed");
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
 		else {
-			System.err.println("redistribution_event_handler not found");
+			System.err.println("redistribution_executor not found");
 			System.exit(1);
 		}
 		
@@ -210,39 +216,45 @@ public class Agent {
 			System.exit(1);
 		}
 		
-		Map<EventType, EventHandler> eventHandlers = loadEventHandlers(redistributionEventHandler, overloadDetector, loadDistributionPlanGenerator);
+		Map<EventType, EventHandler> eventHandlers = loadEventHandlers(redistributionExecutor, overloadDetector, loadDistributionPlanGenerator);
 		
-		Thread eventHandlingThread = new Thread(new EventHandlingThread(eventHandlers));
+		if (configs.containsKey("load_change_ratio_threshold")) {
+			double ratioThreshold = (Double)configs.get("load_change_ratio_threshold");
+			LocalDCLoadUpdateEventHandler handler = (LocalDCLoadUpdateEventHandler) eventHandlers.get(EventType.LocalDCLoadUpdateEvent);
+			handler.setRatioThreshold(ratioThreshold);
+		}
+		
+		Thread eventHandlingThread = new Thread(new EventHandlingThread(eventHandlers, publishReminder));
 		eventHandlingThread.start();
 		
-//		DCStatusPublisher publisher = null;
-//		try {
-//			publisher = new DCStatusPublisher(localDCId, jmsEnvironment);
-//		} catch (Exception e) {
-//			System.err.println("load dc_status_publisher failed");
-//			e.printStackTrace();
-//			System.exit(1);
-//		}
+		DCStatusPublisher publisher = null;
+		try {
+			publisher = new DCStatusPublisher(localDCId, jmsEnvironment);
+		} catch (Exception e) {
+			System.err.println("load dc_status_publisher failed");
+			e.printStackTrace();
+			System.exit(1);
+		}
 		
-//		dcStatusSubscribers = new HashMap<String, DCStatusSubscriber>();
-//		DCStatusUpdateListener dcStatusUpdateListener = new DefaultDCStatusUpdateListener();
-//		
-//		for (DCInfo dcInfo : remoteDCs.values()) {
-//			try {
-//				DCStatusSubscriber dcStatusSubscriber = new DCStatusSubscriber(dcInfo.getDcId(), jmsEnvironment, dcStatusUpdateListener);
-//				dcStatusSubscribers.put(dcInfo.getDcId(), dcStatusSubscriber);
-//			} catch (Exception e) {
-//				System.err.println("load dc_status_subscriber for dc " + dcInfo.getDcId() + " failed");
-//				e.printStackTrace();
-//				System.exit(1);
-//			}
-//		}
+		dcStatusSubscribers = new HashMap<String, DCStatusSubscriber>();
+		DCStatusUpdateListener dcStatusUpdateListener = new DefaultDCStatusUpdateListener();
 		
-		//Thread dcStatusUpdateThread = new Thread(new DCStatusUpdateThread(publisher));
-		//dcStatusUpdateThread.start();
+		for (DCInfo dcInfo : remoteDCs.values()) {
+			try {
+				DCStatusSubscriber dcStatusSubscriber = new DCStatusSubscriber(dcInfo.getDcId(), jmsEnvironment, dcStatusUpdateListener);
+				dcStatusSubscribers.put(dcInfo.getDcId(), dcStatusSubscriber);
+			} catch (Exception e) {
+				System.err.println("load dc_status_subscriber for dc " + dcInfo.getDcId() + " failed");
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
 		
-		//Thread loadMonitorThread = new Thread(new MonitorThread(loadMonitor, 2000));
-		//loadMonitorThread.start();
+		Thread dcStatusUpdateThread = new Thread(new DCStatusUpdateThread(publisher, publishReminder));
+		dcStatusUpdateThread.start();
+		
+		Thread loadMonitorThread = new Thread(new MonitorThread(loadMonitor, 2000));
+		loadMonitorThread.start();
 		
 		Thread serverMonitorThread = new Thread(new MonitorThread(serverMonitor, 2000));
 		
@@ -261,14 +273,15 @@ public class Agent {
 		return loader.load(map);
 	}
 
-	private static Map<EventType, EventHandler> loadEventHandlers(RedistributionEventHandler redistributionEventHandler, OverloadDetector overloadDetector, LoadDistributionPlanGenerator loadDistributionPlanGenerator) {
+	private static Map<EventType, EventHandler> loadEventHandlers(RedistributionExecutor redistributionExecutor, OverloadDetector overloadDetector, LoadDistributionPlanGenerator loadDistributionPlanGenerator) {
 		Map<EventType, EventHandler> eventHandlers = new HashMap<EventType, EventHandler>();
 		EventHandler localDCStatusUpdateEventHandler = new LocalDCStatusUpdateEventHandler(overloadDetector);
-		eventHandlers.put(EventType.LocalDCStatusUpdateEvent, localDCStatusUpdateEventHandler);
+		eventHandlers.put(EventType.LocalDCLoadUpdateEvent, localDCStatusUpdateEventHandler);
 		EventHandler overloadEndEventHandler = new OverloadEndEventHandler();
 		eventHandlers.put(EventType.OverloadEndEvent, overloadEndEventHandler);
 		EventHandler overloadEvent = new OverloadEventHandler(loadDistributionPlanGenerator);
 		eventHandlers.put(EventType.OverloadEvent, overloadEvent);
+		EventHandler redistributionEventHandler = new RedistributionEventHandler(redistributionExecutor);
 		eventHandlers.put(EventType.RedistributionEvent, redistributionEventHandler);
 		return eventHandlers;
 	}
@@ -296,9 +309,9 @@ public class Agent {
 		return loader.load(map);
 	}
 
-	private static RedistributionEventHandler loadRedistributionEventHandler(Map<String, Object> map) throws Exception {
+	private static RedistributionExecutor loadRedistributionExecutor(Map<String, Object> map) throws Exception {
 		String loaderClass = (String)map.get("loader");
-		RedistributionEventHandlerLoader loader = (RedistributionEventHandlerLoader)Class.forName(loaderClass).newInstance();
+		RedistributionExecutorLoader loader = (RedistributionExecutorLoader)Class.forName(loaderClass).newInstance();
 		
 		return loader.load(map);
 	}

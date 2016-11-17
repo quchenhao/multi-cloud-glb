@@ -53,48 +53,6 @@ public class SimpleHAProxy16LoadMonitor extends LoadMonitor {
 		reader.close();
 		
 		return load;
-//		String line;
-//		
-//		int capacity = 0;
-//		
-//		DCManager dcManager = DCManager.getDCManager();
-//		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
-//		
-//		while ((line = reader.readLine()) != null) {
-//			
-//			parts = line.split(",");
-//			
-//			if (parts[1].equals("BACKEND")) {
-//				break;
-//			}
-//			
-//			String name = parts[1];
-//			
-//			if (name.startsWith(localTag)) {
-//				Server server = localDCStatus.getServer(name);
-//				
-//				if (server == null) {
-//					log.error("unrecognized servername: " + name);
-//				}
-//				
-//				if (healthCheck) {
-//					if (parts[17].equals("UP")) {
-//						capacity += server.getCapacity();
-//					}
-//					else {
-//						server.setHealthy(false);
-//					}
-//				}
-//				else {
-//					capacity += server.getCapacity();
-//				}
-//			}
-//			else if (!dcManager.containsDC(name)) {
-//				log.error("unrecognized servername: " + name);
-//			}
-//		}
-//		
-//		return new Measure(capacity, load);
 	}
 
 	@Override

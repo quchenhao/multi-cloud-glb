@@ -13,7 +13,7 @@ import glb.agent.event.RemoteDCStatusUpdateEvent;
 public class RemoteDCStatusUpdateHandler extends EventHandler {
 
 	@Override
-	public void handle(Event event) {
+	public Feedback handle(Event event) {
 		RemoteDCStatusUpdateEvent remoteDCStatusUpdateEvent = (RemoteDCStatusUpdateEvent)event;
 		String remoteDCId = remoteDCStatusUpdateEvent.getDCId();
 		
@@ -28,9 +28,11 @@ public class RemoteDCStatusUpdateHandler extends EventHandler {
 			
 			synchronized(eventQueue) {
 				eventQueue.add(overloadEvent);
-				eventQueue.notifyAll();
+				eventQueue.notify();
 			}
 		}
+		
+		return new Feedback(LocalDCStatusChangeLevel.NO_CHANGE);
 	}
 
 }

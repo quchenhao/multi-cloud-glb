@@ -1,7 +1,6 @@
 package haproxy16.glb.agent.monitor;
 
 import java.util.Map;
-
 import glb.agent.monitor.LoadMonitor;
 import glb.agent.monitor.LoadMonitorLoader;
 

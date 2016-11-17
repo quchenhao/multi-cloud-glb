@@ -2,5 +2,5 @@ package glb.agent.event;
 
 public enum EventType {
 
-	LocalDCStatusUpdateEvent, OverloadEndEvent, OverloadEvent, RedistributionEvent, RemoteDCStatusUpdateEvent
+	LocalDCLoadUpdateEvent, LocalDCCapacityUpdateEvent, LocalDCStatusUpdateEvent, OverloadEndEvent, OverloadEvent, RedistributionEvent, RemoteDCStatusUpdateEvent
 }

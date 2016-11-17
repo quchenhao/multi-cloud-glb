@@ -11,7 +11,7 @@ public class RedistributionEvent extends Event {
 		this.overloadHandlingPlan = overloadHandlingPlan;
 	}
 	
-	public LoadDistributionPlan getOverloadHandlingPlan() {
+	public LoadDistributionPlan getRedistributionPlan() {
 		return overloadHandlingPlan;
 	}
 

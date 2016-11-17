@@ -1,11 +1,9 @@
 package glb.agent.event;
 
+public class LocalDCStatusUpdateEvent extends Event{
 
-public class LocalDCStatusUpdateEvent extends DCStatusUpdateEvent {
-	
 	public LocalDCStatusUpdateEvent() {
 		super(EventType.LocalDCStatusUpdateEvent);
-		
 	}
 
 }

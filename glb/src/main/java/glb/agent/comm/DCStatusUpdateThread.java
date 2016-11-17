@@ -1,19 +1,19 @@
-package glb.agent.core;
+package glb.agent.comm;
 
 import javax.jms.JMSException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import glb.agent.comm.DCStatusPublisher;
-
-class DCStatusUpdateThread implements Runnable{
+public class DCStatusUpdateThread implements Runnable{
 
 	private DCStatusPublisher dcStatusPublisher;
+	private PublishReminder publishReminder;
 	private Logger log = LogManager.getLogger(DCStatusUpdateThread.class);
 	
-	public DCStatusUpdateThread(DCStatusPublisher dcStatusPublisher) {
+	public DCStatusUpdateThread(DCStatusPublisher dcStatusPublisher, PublishReminder publishReminder) {
 		this.dcStatusPublisher = dcStatusPublisher;
+		this.publishReminder = publishReminder;
 	}
 	
 	
@@ -24,7 +24,9 @@ class DCStatusUpdateThread implements Runnable{
 			try {
 				dcStatusPublisher.publishStatus();
 				log.trace("Local DC status published");
-				Thread.sleep(60000);
+				synchronized(publishReminder) {
+					publishReminder.wait(60000);
+				}
 			} catch (JMSException | InterruptedException e ) {
 				log.catching(e);
 			}

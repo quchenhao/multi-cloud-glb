@@ -3,19 +3,17 @@ package glb.agent.monitor;
 import java.util.Queue;
 
 import glb.agent.core.EventQueue;
-import glb.agent.core.dc.DCManager;
-import glb.agent.core.dc.LocalDCStatus;
 import glb.agent.event.Event;
-import glb.agent.event.LocalDCStatusUpdateEvent;
+import glb.agent.event.LocalDCLoadUpdateEvent;
 
 public abstract class LoadMonitor extends Monitor{
+	
+	public LoadMonitor() {
+	}
 
 	public void monitor() throws Exception {
-		DCManager dcManager = DCManager.getDCManager();
-		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
 		int load = getLoad();
-		localDCStatus.updateLoad(load);
-		LocalDCStatusUpdateEvent event = new LocalDCStatusUpdateEvent();
+		LocalDCLoadUpdateEvent event = new LocalDCLoadUpdateEvent(load);
 		Queue<Event> eventQueue = EventQueue.getEventQueue();
 		
 		synchronized(eventQueue) {

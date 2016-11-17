@@ -1,4 +1,4 @@
-package glb.agent.handler.weight;
+package haproxy16.glb.agent.decision.executor.weight;
 
 import java.util.Map;
 

@@ -19,7 +19,7 @@ public class LocalDCStatusUpdateEventHandler extends EventHandler {
 	}
 
 	@Override
-	public void handle(Event event) {
+	public Feedback handle(Event event) {
 		DCManager dcManager = DCManager.getDCManager();
 		LocalDCStatus localDCStatus = dcManager.getLocalDCStatus();
 		
@@ -29,7 +29,6 @@ public class LocalDCStatusUpdateEventHandler extends EventHandler {
 			
 			synchronized(eventQueue) {
 				eventQueue.add(overloadEvent);
-				eventQueue.notifyAll();
 			}
 		}
 		else if (!localDCStatus.getOutsourcedLoad().isEmpty()) {
@@ -37,9 +36,11 @@ public class LocalDCStatusUpdateEventHandler extends EventHandler {
 			
 			synchronized(eventQueue) {
 				eventQueue.add(overloadEndEvent);
-				eventQueue.notifyAll();
+				eventQueue.notify();
 			}
 		}
+		
+		return new Feedback(LocalDCStatusChangeLevel.NO_CHANGE);
 	}
 
 }
