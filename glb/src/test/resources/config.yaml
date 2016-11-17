@@ -5,7 +5,7 @@ server_types:
 
 redistribution_executor:
   loader: haproxy16.glb.agent.decision.executor.SimpleHAProxy16RedistributionExecutorLoader
-  weight_calculator: haproxy16.glb.agent.handler.weight.SimpleHAProxy16WeightCalculator
+  weight_calculator: haproxy16.glb.agent.decision.executor.weight.SimpleHAProxy16WeightCalculator
   base_file_path: base.cfg
 
 load_change_ratio_threshold: 0.1

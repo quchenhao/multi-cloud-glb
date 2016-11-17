@@ -30,6 +30,7 @@ import glb.agent.detector.OverloadDetector;
 import glb.agent.detector.OverloadDetectorLoader;
 import glb.agent.event.EventType;
 import glb.agent.handler.EventHandler;
+import glb.agent.handler.LocalDCCapacityUpdateEventHandler;
 import glb.agent.handler.LocalDCLoadUpdateEventHandler;
 import glb.agent.handler.LocalDCStatusUpdateEventHandler;
 import glb.agent.handler.OverloadEndEventHandler;
@@ -140,7 +141,7 @@ public class Agent {
 		
 		if (configs.containsKey("redistribution_executor")) {
 			try {
-				redistributionExecutor = loadRedistributionExecutor((Map<String, Object>)configs.get("redistribution_event_handler"));
+				redistributionExecutor = loadRedistributionExecutor((Map<String, Object>)configs.get("redistribution_executor"));
 			} catch (Exception e) {
 				System.err.println("load redistribution_executor failed");
 				e.printStackTrace();
@@ -275,8 +276,12 @@ public class Agent {
 
 	private static Map<EventType, EventHandler> loadEventHandlers(RedistributionExecutor redistributionExecutor, OverloadDetector overloadDetector, LoadDistributionPlanGenerator loadDistributionPlanGenerator) {
 		Map<EventType, EventHandler> eventHandlers = new HashMap<EventType, EventHandler>();
+		EventHandler localDCLoadUpdateEventHandler = new LocalDCLoadUpdateEventHandler();
+		eventHandlers.put(EventType.LocalDCLoadUpdateEvent, localDCLoadUpdateEventHandler);
+		EventHandler localDCCapacityUpdateEventHandler = new LocalDCCapacityUpdateEventHandler();
+		eventHandlers.put(EventType.LocalDCCapacityUpdateEvent, localDCCapacityUpdateEventHandler);
 		EventHandler localDCStatusUpdateEventHandler = new LocalDCStatusUpdateEventHandler(overloadDetector);
-		eventHandlers.put(EventType.LocalDCLoadUpdateEvent, localDCStatusUpdateEventHandler);
+		eventHandlers.put(EventType.LocalDCStatusUpdateEvent, localDCStatusUpdateEventHandler);
 		EventHandler overloadEndEventHandler = new OverloadEndEventHandler();
 		eventHandlers.put(EventType.OverloadEndEvent, overloadEndEventHandler);
 		EventHandler overloadEvent = new OverloadEventHandler(loadDistributionPlanGenerator);
