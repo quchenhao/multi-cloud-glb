@@ -18,7 +18,7 @@ public abstract class LoadMonitor extends Monitor{
 		
 		synchronized(eventQueue) {
 			eventQueue.add(event);
-			eventQueue.notifyAll();
+			eventQueue.notify();
 		}
 	}
 	

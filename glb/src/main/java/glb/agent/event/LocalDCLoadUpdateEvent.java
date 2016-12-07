@@ -1,7 +1,7 @@
 package glb.agent.event;
 
 
-public class LocalDCLoadUpdateEvent extends DCStatusUpdateEvent {
+public class LocalDCLoadUpdateEvent extends Event {
 	
 	private int load;
 	

@@ -39,7 +39,7 @@ public class DefaultDCStatusUpdateListener extends DCStatusUpdateListener {
 			
 			synchronized(eventQueue) {
 				eventQueue.add(event);
-				eventQueue.notifyAll();
+				eventQueue.notify();
 			}
 		} catch (JMSException e) {
 			log.catching(e);
