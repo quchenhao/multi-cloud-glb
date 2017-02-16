@@ -82,19 +82,19 @@ public class LatencyAwareLoadDistributionPlanGeneratorTest {
 	}
 	private void testNormal() throws Exception {
 		LocalDCStatus localDCStatus = new LocalDCStatus("virginia", 1);
-		localDCStatus.updateLoad(50);
+		localDCStatus.updateLoad(70);
 		Collection<RemoteDCStatus> remoteDCStatuses = new ArrayList<RemoteDCStatus>();
 		
 		RemoteDCStatus ireland = new RemoteDCStatus("ireland", 76);
-		ireland.updateCapacity(100);
-		ireland.updateMaxServiceRate(120);
-		ireland.updateLoad(70);
+		ireland.updateCapacity(140);
+		ireland.updateMaxServiceRate(161);
+		ireland.updateLoad(105);
 		remoteDCStatuses.add(ireland);
 		
 		RemoteDCStatus tokyo = new RemoteDCStatus("tokyo", 167);
-		tokyo.updateCapacity(120);
-		tokyo.updateMaxServiceRate(130);
-		tokyo.updateLoad(80);
+		tokyo.updateCapacity(280);
+		tokyo.updateMaxServiceRate(328);
+		tokyo.updateLoad(210);
 		remoteDCStatuses.add(tokyo);
 		
 		LoadDistributionPlan plan = planGenerator.generateOverloadHandlingPlan(localDCStatus, remoteDCStatuses);

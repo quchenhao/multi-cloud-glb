@@ -48,6 +48,7 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 			maxServiceRates[i] = dcStatus.getMaxServiceRate();
 			System.out.print(maxServiceRates[i] + " ");
 			double load = dcStatus.getTotalLoad();
+			System.out.print(load + " ");
 			
 			if (outSourcedLoad.containsKey(dcStatus.getDCId())) {
 				load = load - outSourcedLoad.get(dcStatus.getDCId());
@@ -72,7 +73,7 @@ public class LatencyAwareLoadDistributionPlanGenerator extends LoadDistributionP
 			
 			System.out.print(availableCapacities[i] + " ");
 			
-			latencies[i] = dcStatus.getLatency();
+			latencies[i] = dcStatus.getLatency()/1000.0;
 			
 			System.out.println(latencies[i]);
 		}
